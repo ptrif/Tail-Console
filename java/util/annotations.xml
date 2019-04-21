@@ -1,0 +1,5 @@
+<root>
+    <item name='java.util.ArrayDeque ArrayDeque()'>
+        <annotation name='java.lang.Deprecated'/>
+    </item>
+</root>
