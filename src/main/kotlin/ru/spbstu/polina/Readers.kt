@@ -5,16 +5,20 @@ import java.io.RandomAccessFile
 import java.lang.StringBuilder
 import java.util.*
 
-class FileReaderBySymbol : ReaderI {
+
+/*
+ fileReader for -c flag
+ returns last num symbols of the file
+ */
+class FileReaderBySymbol : ReaderI { //change
 
     override fun read(fileNames: List<String>, count: Int): String {
 
         val result = mutableListOf<String>()
-        val lines = ArrayDeque<String>()
-        val symbols = ArrayDeque<Char>() //eeehh, what happened to you???
+        val symbols = ArrayDeque<Char>()
         var num = count
 
-        fileNames.forEach { file ->
+        for (file in fileNames) {
             val reader = RandomAccessFile(file, "r") //r - read, rw -read&write
             val size = File(file).length()
             var i = size - 1 //needed byte to jump
@@ -23,45 +27,45 @@ class FileReaderBySymbol : ReaderI {
 
                 val c = reader.read()
                 if (c != -1) {
-                    symbols.add(c.toChar())
+                    symbols += c.toChar()
                     i--
-                    if ('\n' == c.toChar() || '\r' == c.toChar())
+                    if ('\n' == c.toChar())
                         num++
                     continue
                 }
                 break
             }
             val adding = symbols.toTypedArray()
-                                .joinToString("")
+                                       .joinToString("")
 
-            lines.add(adding)
+            result += adding
             symbols.clear()
 
             if (fileNames.size > 1)
-                lines.add("$file\n".reversed())
-            val adding2 = lines.toTypedArray()
-                               .joinToString("")
-            result.add(adding2)
+                result += "$file\n".reversed()
+
+            result.toTypedArray().joinToString("")
             result += "\n"
 
-            lines.clear()
         }
         val index = result.size - 1
         result.removeAt(index)
 
-        return result.toTypedArray()
-                     .joinToString("")
-                     .reversed()
+        return result.joinToString("").reversed()
     }
 }
 
+/*
+ fileReader for -n flag
+ returns last num lines of the file
+ */
 class FileReaderByString : ReaderI {
     override fun read(fileNames: List<String>, count: Int): String {
 
         val result = mutableListOf<String>()
         val lines = ArrayDeque<String>()
 
-        fileNames.forEach { file ->
+        for (file in fileNames) {
             var str = StringBuilder()
             val reader = RandomAccessFile(file, "r")
             val size = File(file).length()
@@ -69,36 +73,38 @@ class FileReaderByString : ReaderI {
             var line = 0
             while (i >= 0 && line < count) {
                 reader.seek(i)
-                val c = reader.read()
-                if (c == '\n'.toInt()) {
-                    line++
-                    lines.add(str.toString())
-                    str = StringBuilder()
-                } else if (c == -1) {
-                    lines.add(str.toString())
+                val c = reader.read() //readLines
+                if (c == -1) {
+                    lines += str.toString()
                     break
 
-                } else if (c == '\r'.toInt()) {
+                } else if (c == '\n'.toInt()) {
+                    line++
                     i--
-                    continue
+                    lines += str.toString()
+                    str = StringBuilder()
                 }
                 str.append(c.toChar())
                 i--
             }
-            lines.add(str.toString())
-            if (count == lines.size)
-                lines.add("\n")
-            if (fileNames.size > 1)
-                lines.add(file.reversed())
+            lines += str.toString()
 
-            val adding = lines.toTypedArray().joinToString("").reversed()
+            if (count == lines.size)
+                lines += "\n"
+            if (fileNames.size > 1)
+                lines += file.reversed()
+
+            val adding = lines.toTypedArray()
+                                     .joinToString("")
+                                     .reversed()
+
             result.add(adding)
             result += "\n"
             lines.clear()
         }
         val index = result.size - 1
         result.removeAt(index)
-        return result.toTypedArray().joinToString("")
+        return result.joinToString("")
     }
 }
 
@@ -120,10 +126,11 @@ class ConsoleReaderBySymbol : ReaderI {
 
         while (input.hasNext()) {
             newLine = input.nextLine()
-            if (!newLine.isBlank()) {
-                for (char in newLine) {
-                    d.add(char)
-                    if (d.size >= num) d.removeFirst()
+            if (newLine != null) {
+                newLine.forEach { char ->
+                    d += char
+                    if (d.size >= num)
+                        d.removeFirst()
                 }
                 d.addLast('\n')
                 num++
@@ -132,7 +139,7 @@ class ConsoleReaderBySymbol : ReaderI {
             break
         }
         d.removeLast()
-        return d.toTypedArray().joinToString("")
+        return d.joinToString("")
     }
 
 }
@@ -152,18 +159,19 @@ class ConsoleReaderByString : ReaderI {
 
         while (input.hasNextLine()) {
             newLine = input.nextLine()
-            if (newLine.isNotBlank()) {
+            if (newLine != null) {
                 if (lines.size == count)
                     lines.removeFirst()
-                lines.add(newLine)
+                lines += newLine
                 continue
             }
             break
         }
         val sep = System.lineSeparator()
-        return lines.toTypedArray().joinToString(sep)
+        return lines.joinToString(sep)
 
     }
 
 
 }
+

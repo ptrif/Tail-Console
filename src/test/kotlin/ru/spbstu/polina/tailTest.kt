@@ -7,12 +7,11 @@ import org.junit.contrib.java.lang.system.TextFromStandardInputStream
 import java.io.File
 import java.util.*
 import kotlin.test.assertEquals
-import kotlin.test.assertFails
-import kotlin.test.assertFalse
 
 class TailAutoTests {
 
     @Test
+
     fun parserTest() {
 
         var parser = ParserNew(listOf("-c","5", "inputText1.txt", "inputKotlinNum.txt").toList())
@@ -26,11 +25,15 @@ class TailAutoTests {
 
         assertEquals(listOf("inputText.txt", "inputKotl.txt"), data.fileNames)
 
+        //parser = ParserNew(listOf("-n", "2", "-c", "3", "inputText1.txt").toList())
+        //data = parser.parse()
+
 
     }
 
 
     @Test
+
     fun consoleWriterTest() {
         val writer = ConsoleWriter()
         writer.write("123456789")
@@ -57,7 +60,6 @@ class TailAutoTests {
     }
 
 
-    class ReaderTests {
         private val file = "src/test/testresourses/input/inputKotl"
         private val file1 = "src/test/testresourses/input/inputText1"
         @Rule
@@ -65,7 +67,10 @@ class TailAutoTests {
         val systemOut = SystemOutRule().enableLog()!!
         @Rule
         @JvmField
-        val systemIn = TextFromStandardInputStream.emptyStandardInputStream()!! //replace console usement
+        val systemIn = TextFromStandardInputStream
+                       .emptyStandardInputStream()!! //replace console usement
+
+
 
         @Test
 
@@ -77,7 +82,9 @@ class TailAutoTests {
         }
 
         private val file3 = "src/test/testresourses/input/math"
+
         @Test
+
         fun fileReaderBySymbolTest() {
             val reader = FileReaderBySymbol()
             val files = listOf(file, file1, file3)
@@ -104,7 +111,7 @@ class TailAutoTests {
             ConsoleWriter().write(reader.read(listOf(), 5))
             assertEquals("\n98765" + System.lineSeparator(), systemOut.log)
         }
-    }
+
 
 }
 

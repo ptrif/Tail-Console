@@ -24,12 +24,13 @@ fun main(args: Array<String>) {
         else -> throw Exception("Insert Argument!")
     }
 
-    if (inputData.outputFileName == null)
-        writer = ConsoleWriter()
-    else
+    if (inputData.outputFileName != null) {
         writer = FileWriter(inputData.outputFileName)
+    } else
+        writer = ConsoleWriter()
 
     res = reader.read(inputData.fileNames, inputData.count)
 
     writer.write(res)
+
 }
