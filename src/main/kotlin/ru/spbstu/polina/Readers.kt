@@ -10,7 +10,7 @@ import java.util.*
  fileReader for -c flag
  returns last num symbols of the file
  */
-class FileReaderBySymbol : ReaderI { //change
+class FileReaderBySymbol : ReaderI {
 
     override fun read(fileNames: List<String>, count: Int): String {
 
@@ -19,7 +19,7 @@ class FileReaderBySymbol : ReaderI { //change
         var num: Long
 
         for (file in fileNames) {
-            val reader = RandomAccessFile(file, "r") //r - read, rw -read&write
+            val reader = RandomAccessFile(file, "r") //r - read
             val size = File(file).length()
             num = size - (count-1).toLong() //needed byte to jump
             while (num >= 0 && size - num <= count) {
@@ -65,28 +65,31 @@ class FileReaderByString : ReaderI {
 
         val result = mutableListOf<String>()
         val lines = ArrayDeque<String>()
+        var num: Long
 
         for (file in fileNames) {
             var str = StringBuilder()
             val reader = RandomAccessFile(file, "r")
             val size = File(file).length()
-            var i = size - 1
+            num = size - (count-1).toLong() //needed byte to jump
             var line = 0
-            while (i >= 0 && line < count) {
-                reader.seek(i)
+            while (num >= 0 && line < count) {
+                reader.seek(num)
                 val c = reader.read() //readLines
-                if (c == -1) {
+                if (c != -1) {
+                    if (c == '\n'.toInt()) {
+                        line++
+                        num--
+                        lines += str.toString()
+                        str = StringBuilder()
+                    }
+                } else {
                     lines += str.toString()
                     break
 
-                } else if (c == '\n'.toInt()) {
-                    line++
-                    i--
-                    lines += str.toString()
-                    str = StringBuilder()
                 }
                 str.append(c.toChar())
-                i--
+                num--
             }
             lines += str.toString()
 
@@ -96,8 +99,8 @@ class FileReaderByString : ReaderI {
                 lines += file.reversed()
 
             val adding = lines.toTypedArray()
-                    .joinToString("")
-                    .reversed()
+                    .joinToString("").reversed()
+
 
             result.add(adding)
             result += "\n"
