@@ -109,7 +109,7 @@ class TailAutoTests {
             val reader = ConsoleReaderBySymbol()
             systemIn.provideLines("1", "23", "98765")
             ConsoleWriter().write(reader.read(listOf(), 5))
-            assertEquals("\n98765" + System.lineSeparator(), systemOut.log)
+            assertEquals("\n98765" + System.lineSeparator(), systemOut.log) //посмотреть linesep
         }
 
 

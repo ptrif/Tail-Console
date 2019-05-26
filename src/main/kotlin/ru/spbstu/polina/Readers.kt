@@ -16,20 +16,20 @@ class FileReaderBySymbol : ReaderI { //change
 
         val result = mutableListOf<String>()
         val symbols = ArrayDeque<Char>()
-        var num = count
+        var num: Long
 
         for (file in fileNames) {
             val reader = RandomAccessFile(file, "r") //r - read, rw -read&write
             val size = File(file).length()
-            var i = size - 1 //needed byte to jump
-            while (i >= 0 && size - i <= num) {
-                reader.seek(i) //jump to byte
+            num = size - (count-1).toLong() //needed byte to jump
+            while (num >= 0 && size - num <= count) {
+                reader.seek(num) //jump to byte
 
                 val c = reader.read()
                 if (c != -1) {
-                    symbols += c.toChar()
-                    i--
-                    if ('\n' == c.toChar())
+                    symbols.add(c.toChar())
+                    num--//next byte, right direction
+                    if (c.toChar() == '\n')
                         num++
                     continue
                 }
@@ -37,6 +37,7 @@ class FileReaderBySymbol : ReaderI { //change
             }
             val adding = symbols.toTypedArray()
                                        .joinToString("")
+
 
             result += adding
             symbols.clear()
@@ -95,8 +96,8 @@ class FileReaderByString : ReaderI {
                 lines += file.reversed()
 
             val adding = lines.toTypedArray()
-                                     .joinToString("")
-                                     .reversed()
+                    .joinToString("")
+                    .reversed()
 
             result.add(adding)
             result += "\n"
