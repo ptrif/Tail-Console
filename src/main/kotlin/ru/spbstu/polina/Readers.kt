@@ -99,7 +99,8 @@ class FileReaderByString : ReaderI {
                 lines += file.reversed()
 
             val adding = lines.toTypedArray()
-                    .joinToString("").reversed()
+                                     .joinToString("")
+                                     .reversed()
 
 
             result.add(adding)
@@ -127,7 +128,7 @@ class ConsoleReaderBySymbol : ReaderI {
         val d = ArrayDeque<Char>()
         var num = count
         val input = Scanner(System.`in`)
-
+        
         while (input.hasNext()) {
             newLine = input.nextLine()
             if (newLine != null) {
