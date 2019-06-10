@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package ru.spbstu.polina
 
 import java.io.File
@@ -10,49 +12,41 @@ import java.util.*
  fileReader for -c flag
  returns last num symbols of the file
  */
-class FileReaderBySymbol : ReaderI {
+class FileReaderBySymbol : ReaderI { //выводит то что надо, но порядок файлов не тот
 
     override fun read(fileNames: List<String>, count: Int): String {
-
         val result = mutableListOf<String>()
-        val symbols = ArrayDeque<Char>()
         var num: Long
 
         for (file in fileNames) {
-            val reader = RandomAccessFile(file, "r") //r - read
+            val symbols = ArrayDeque<Char>()
+            val reader = RandomAccessFile(file, "r")
             val size = File(file).length()
-            num = size - (count-1).toLong() //needed byte to jump
-            while (num >= 0 && size - num <= count) {
-                reader.seek(num) //jump to byte
+            num = size - (count).toLong() //needed byte to jump
+            reader.seek(num)
 
+            while (num >= 0 && size - num <= count) {
                 val c = reader.read()
                 if (c != -1) {
                     symbols.add(c.toChar())
-                    num--//next byte, right direction
+                    num++
                     if (c.toChar() == '\n')
-                        num++
+                        num--
                     continue
                 }
                 break
             }
-            val adding = symbols.toTypedArray()
-                                       .joinToString("")
+            val adding = symbols.joinToString("")
 
-
-            result += adding
+            result.add("$file\n")
+            result.add(adding)
+            result.add("\n")
             symbols.clear()
-
-            if (fileNames.size > 1)
-                result += "$file\n".reversed()
-
-            result.toTypedArray().joinToString("")
-            result += "\n"
-
         }
         val index = result.size - 1
         result.removeAt(index)
 
-        return result.joinToString("").reversed()
+        return result.joinToString("")
     }
 }
 
@@ -61,59 +55,30 @@ class FileReaderBySymbol : ReaderI {
  returns last num lines of the file
  */
 class FileReaderByString : ReaderI {
-    override fun read(fileNames: List<String>, count: Int): String {
 
-        val result = mutableListOf<String>()
+    override fun read(fileNames: List<String>, count: Int): String {
         val lines = ArrayDeque<String>()
-        var num: Long
 
         for (file in fileNames) {
+            val reader = File(file).bufferedReader()
             var str = StringBuilder()
-            val reader = RandomAccessFile(file, "r")
-            val size = File(file).length()
-            num = size - (count-1).toLong() //needed byte to jump
-            var line = 0
-            while (num >= 0 && line < count) {
-                reader.seek(num)
-                val c = reader.read() //readLines
-                if (c != -1) {
-                    if (c == '\n'.toInt()) {
-                        line++
-                        num--
-                        lines += str.toString()
-                        str = StringBuilder()
-                    }
-                } else {
-                    lines += str.toString()
-                    break
+            val allLines = reader.readLines()
+            val size = allLines.size
+            var lineNumber = size - count
+            lines+=file
 
-                }
-                str.append(c.toChar())
-                num--
+            while (lineNumber != size) {
+                val line = allLines[lineNumber]
+                lineNumber++
+                str.append(line)
+                lines += str.toString()
+
+                str = StringBuilder()
             }
-            lines += str.toString()
-
-            if (count == lines.size)
-                lines += "\n"
-            if (fileNames.size > 1)
-                lines += file.reversed()
-
-            val adding = lines.toTypedArray()
-                                     .joinToString("")
-                                     .reversed()
-
-
-            result.add(adding)
-            result += "\n"
-            lines.clear()
         }
-        val index = result.size - 1
-        result.removeAt(index)
-        return result.joinToString("")
+        return lines.joinToString("\n")
     }
 }
-
-
 /*
  console string reader by Symbol
  for -c flag
@@ -122,13 +87,12 @@ class FileReaderByString : ReaderI {
 */
 class ConsoleReaderBySymbol : ReaderI {
 
-
     override fun read(fileNames: List<String>, count: Int): String {
         var newLine: String
         val d = ArrayDeque<Char>()
         var num = count
         val input = Scanner(System.`in`)
-        
+
         while (input.hasNext()) {
             newLine = input.nextLine()
             if (newLine != null) {
@@ -146,9 +110,7 @@ class ConsoleReaderBySymbol : ReaderI {
         d.removeLast()
         return d.joinToString("")
     }
-
 }
-
 /*
  console string reader by String
  for -n flag
@@ -174,9 +136,6 @@ class ConsoleReaderByString : ReaderI {
         }
         val sep = System.lineSeparator()
         return lines.joinToString(sep)
-
     }
-
-
 }
 
