@@ -96,9 +96,9 @@ class ConsoleReaderBySymbol : ReaderI {
         while (input.hasNext()) {
             newLine = input.nextLine()
             if (newLine != null) {
-                newLine.forEach { char ->
+                for (char in newLine) {
                     d += char
-                    if (d.size >= num)
+                    if (d.size == num)
                         d.removeFirst()
                 }
                 d.addLast('\n')
