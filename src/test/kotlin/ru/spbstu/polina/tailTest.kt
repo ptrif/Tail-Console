@@ -88,8 +88,8 @@ class TailAutoTests {
         fun fileReaderBySymbolTest() {
             val reader = FileReaderBySymbol()
             val files = listOf(file, file1, file3)
-            val result = "$file3\n88\n$file1\n45\n$file\nn4"
-            assertEquals(result, reader.read(files, 2))
+            val res = "$file\nn4\n$file1\n45\n$file3\n88"
+            assertEquals(res, reader.read(files, 2))
         }
 
         @Test
@@ -99,7 +99,7 @@ class TailAutoTests {
             systemIn.provideLines("vrf", "mario cart", "mamma mia!")
             ConsoleWriter().write(reader.read(listOf(), 2))
             assertEquals("mario cart" + System.lineSeparator()
-                                + "mamma mia!" + System.lineSeparator(), systemOut.log)
+                                + "mamma mia!", systemOut.log)
 
         }
 
@@ -109,7 +109,7 @@ class TailAutoTests {
             val reader = ConsoleReaderBySymbol()
             systemIn.provideLines("1", "23", "98765")
             ConsoleWriter().write(reader.read(listOf(), 5))
-            assertEquals("\n98765" + System.lineSeparator(), systemOut.log) //посмотреть linesep
+            assertEquals("\n98765", systemOut.log)
         }
 
 

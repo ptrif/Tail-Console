@@ -12,7 +12,7 @@ import java.util.*
  fileReader for -c flag
  returns last num symbols of the file
  */
-class FileReaderBySymbol : ReaderI { //выводит то что надо, но порядок файлов не тот
+class FileReaderBySymbol : ReaderI {
 
     override fun read(fileNames: List<String>, count: Int): String {
         val result = mutableListOf<String>()
@@ -89,7 +89,7 @@ class ConsoleReaderBySymbol : ReaderI {
 
     override fun read(fileNames: List<String>, count: Int): String {
         var newLine: String
-        val d = ArrayDeque<Char>()
+        val symbols = ArrayDeque<Char>()
         var num = count
         val input = Scanner(System.`in`)
 
@@ -97,18 +97,18 @@ class ConsoleReaderBySymbol : ReaderI {
             newLine = input.nextLine()
             if (newLine != null) {
                 for (char in newLine) {
-                    d += char
-                    if (d.size == num)
-                        d.removeFirst()
+                    symbols += char
+                    if (symbols.size == num)
+                        symbols.removeFirst()
                 }
-                d.addLast('\n')
+                symbols.addLast('\n')
                 num++
                 continue
             }
             break
         }
-        d.removeLast()
-        return d.joinToString("")
+        symbols.removeLast()
+        return symbols.joinToString("")
     }
 }
 /*

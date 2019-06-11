@@ -10,7 +10,7 @@ super simple classes
 
 class ConsoleWriter : WriterI{
     override fun write(text: String) {
-        println(text) //println(text)
+        print(text)
     }
 }
 
